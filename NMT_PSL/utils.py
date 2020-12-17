@@ -3,7 +3,7 @@ import tensorflow as tf
 
 def create_tf_dataset(
     train_pair,dev_pair,test_pair,batch_size_train,
-    batch_size_dev,batch_size_test,buffer_size=0, verbose=0):
+    batch_size_dev,batch_size_test,buffer_size=0, verbose=False):
 
     ## Dataset for train
     train_dataset = tf.data.Dataset.from_tensor_slices(train_pair).shuffle(buffer_size)
