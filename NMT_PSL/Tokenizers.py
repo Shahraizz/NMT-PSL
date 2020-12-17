@@ -6,7 +6,8 @@ from transformers import AutoTokenizer
 
 def TFTokenizer(
     train_data,test_data, inp_lang, targ_lang, 
-    pad='post', fit_test=True, is_lower=True, max_len_inp=None, max_len_targ=None):
+    pad='post', fit_test=True, is_lower=True,
+    max_len_inp=None, max_len_targ=None, verbose=True):
     
     """
     prameters:
@@ -38,12 +39,19 @@ def TFTokenizer(
         tokenizer.texts_to_sequences(test_inp), padding=pad, maxlen=max_len_inp)
     targ_tensor_test = pad_sequences(
         tokenizer.texts_to_sequences(test_targ), padding=pad, maxlen=max_len_targ)
+
+    if verbose:
+        print('Max_length of input sequence train: {}'.format(inp_tensor_train.shape[1]))
+        print('Max_length of target sequence train: {}'.format(targ_tensor_train.shape[1]))
+        print('Max_length of input sequence test: {}'.format(inp_tensor_test.shape[1]))
+        print('Max_length of target sequence test: {}'.format(targ_tensor_test.shape[1]))
     
     return tokenizer, (inp_tensor_train, targ_tensor_train, inp_tensor_test, targ_tensor_test)
 
 
 def TFSubTokenizer(
-    train_data, test_data, inp_lang, targ_lang, pad='post', fit_test=True, is_lower=True):
+    train_data, test_data, inp_lang, targ_lang, pad='post',
+    fit_test=True, is_lower=True, verbose=True):
 
     """
     prameters:
@@ -86,6 +94,12 @@ def TFSubTokenizer(
 
     inp_tensor_test = pad_sequences(test_inp, padding=pad)
     targ_tensor_test = pad_sequences(test_targ, padding=pad)
+
+    if verbose:
+        print('Max_length of input sequence train: {}'.format(inp_tensor_train.shape[1]))
+        print('Max_length of target sequence train: {}'.format(targ_tensor_train.shape[1]))
+        print('Max_length of input sequence test: {}'.format(inp_tensor_test.shape[1]))
+        print('Max_length of target sequence test: {}'.format(targ_tensor_test.shape[1]))
     
     return tokenizer, (inp_tensor_train, targ_tensor_train, inp_tensor_test, targ_tensor_test)
 

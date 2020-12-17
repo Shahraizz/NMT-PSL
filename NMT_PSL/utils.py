@@ -29,3 +29,9 @@ def create_tf_dataset(
         ))
     
     return train_dataset, val_dataset, test_dataset
+
+
+def set_dev_size(around, total_size):
+    for i in range(around,around+64+1):
+        if (total_size- i) % 64 == 0:
+            return i
