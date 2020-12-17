@@ -54,13 +54,14 @@ def TFSubTokenizer(
     fit_test=True, is_lower=True, verbose=True):
 
     """
-    prameters:
-
+    Args:
     train_data: An object of pandas.DataFrame containing training data.
     test_data: An object of pandas.DataFrame containing test data.
     inp_lang: Input language name.
     targ_lang: Target language name.
 
+    Return:
+    
     """
 
     if is_lower:
