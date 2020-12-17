@@ -4,7 +4,7 @@ setup(
     name='NMT-PSL',
     version='0.0.1',
     description='Pakistan sign language text translation',
-    url='git@github.com:Shahraizz/NMT-PSL.git',
+    url='https://github.com/Shahraizz/NMT-PSL.git',
     author='Shahraiz Anwer',
     author_email='shehraizbhatti11@gmail.com',
     license='unlicense',
