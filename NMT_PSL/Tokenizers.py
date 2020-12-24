@@ -3,6 +3,7 @@ from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 import tensorflow_datasets as tfds
 from transformers import AutoTokenizer
+from bpemb import BPEmb
 
 def TFTokenizer(
     train_data,test_data, inp_lang, targ_lang, 
@@ -162,3 +163,33 @@ def bertTokenizer(train_data,test_data, inp_lang, targ_lang, pad='post'):
                       test_inp_encoded, 
                       test_targ_encoded
                      )
+
+
+
+
+def bpeTokenizer(train_data, test_data, inp_lang, targ_lang, vs, pad='post',
+                 fit_test=True, is_lower=True, verbose=True):
+    
+    bpemb_en = BPEmb(lang="en", vs=vs)
+    train_inp = bpemb_en.encode_ids(train_data[inp_lang].values)
+    train_targ = bpemb_en.encode_ids(train_data[targ_lang].values)
+    test_inp = bpemb_en.encode_ids(test_data[inp_lang].values)
+    test_targ = bpemb_en.encode_ids(test_data[targ_lang].values)
+    
+    train_inp = [[vs-2]+x+[vs-1] for x in train_inp]
+    train_targ = [[vs-2]+x+[vs-1] for x in train_targ]
+    test_inp = [[vs-2]+x+[vs-1] for x in test_inp]
+    test_targ = [[vs-2]+x+[vs-1] for x in test_targ]
+    
+    inp_tensor_train = pad_sequences(train_inp, padding=pad)
+    targ_tensor_train = pad_sequences(train_targ, padding=pad)
+    inp_tensor_test = pad_sequences(test_inp, padding=pad)
+    targ_tensor_test = pad_sequences(test_targ, padding=pad)
+    
+    if verbose:
+        print('Max_length of input sequence train: {}'.format(inp_tensor_train.shape[1]))
+        print('Max_length of target sequence train: {}'.format(targ_tensor_train.shape[1]))
+        print('Max_length of input sequence test: {}'.format(inp_tensor_test.shape[1]))
+        print('Max_length of target sequence test: {}'.format(targ_tensor_test.shape[1]))
+        
+    return bpemb_en, (inp_tensor_train, targ_tensor_train, inp_tensor_test, targ_tensor_test)
