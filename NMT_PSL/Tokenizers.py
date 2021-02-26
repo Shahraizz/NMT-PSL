@@ -11,7 +11,7 @@ def TFTokenizer(
     max_len_inp=None, max_len_targ=None, verbose=True):
     
     """
-    prameters:
+    Args:
 
     train_data: An object of pandas.DataFrame containing training data.
     test_data: An object of pandas.DataFrame containing test data.
@@ -170,12 +170,25 @@ def bertTokenizer(train_data,test_data, inp_lang, targ_lang, pad='post'):
 def bpeTokenizer(train_data, test_data, inp_lang, targ_lang, vs, pad='post',
                  fit_test=True, is_lower=True, verbose=True):
     
+    """
+    Args:
+    train_data: An object of pandas.DataFrame containing training data.
+    test_data: An object of pandas.DataFrame containing test data.
+    inp_lang: Input language name.
+    targ_lang: Target language name.
+    vs: Vocabulary size (1000, 3000, 10000, 50000, 100000)
+
+    Return:
+    
+    """
+    
     bpemb_en = BPEmb(lang="en", vs=vs)
     train_inp = bpemb_en.encode_ids(train_data[inp_lang].values)
     train_targ = bpemb_en.encode_ids(train_data[targ_lang].values)
     test_inp = bpemb_en.encode_ids(test_data[inp_lang].values)
     test_targ = bpemb_en.encode_ids(test_data[targ_lang].values)
     
+    ## Adding start and end tokens
     train_inp = [[vs-2]+x+[vs-1] for x in train_inp]
     train_targ = [[vs-2]+x+[vs-1] for x in train_targ]
     test_inp = [[vs-2]+x+[vs-1] for x in test_inp]
