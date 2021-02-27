@@ -1,4 +1,4 @@
-
+import os
 
 
 
@@ -16,7 +16,7 @@ def loadGlove(emd_path, embedding_dim, num_tokens, tokenizer, tok_size):
     """
     
     if emd_path.get(str(tok_size)+'_'+str(embedding_dim)+'D'):
-        path_to_glove_file = os.path.join(emd_path[tok_size])
+        path_to_glove_file = os.path.join(emd_path[str(tok_size)+'_'+str(embedding_dim)+'D'])
     else:
         print("Can't load glove embeddings")
         return 0   
