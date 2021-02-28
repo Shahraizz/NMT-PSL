@@ -1,5 +1,6 @@
-import os
-
+import numpy as np
+import tensorflow as tf
+from gensim.models import KeyedVectors
 
 
 
@@ -16,7 +17,7 @@ def loadGlove(emd_path, embedding_dim, num_tokens, tokenizer, tok_size):
     """
     
     if emd_path.get(str(tok_size)+'_'+str(embedding_dim)+'D'):
-        path_to_glove_file = os.path.join(emd_path[str(tok_size)+'_'+str(embedding_dim)+'D'])
+        path_to_glove_file = emd_path[str(tok_size)+'_'+str(embedding_dim)+'D']
     else:
         print("Can't load glove embeddings")
         return 0   
@@ -61,11 +62,9 @@ def loadFasttext(emd_path, limit, tokenizer, num_tokens, subword=False):
     """
     
     if subword:
-        path_to_glove_file = os.path.join(
-            emd_path['subword'])
+        path_to_glove_file = emd_path['subword']
     else:
-        path_to_glove_file = os.path.join(
-            emd_path['word'])
+        path_to_glove_file = emd_path['word']
     
     model = KeyedVectors.load_word2vec_format(path_to_glove_file, limit=limit)
     
