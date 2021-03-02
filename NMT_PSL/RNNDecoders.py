@@ -1,7 +1,7 @@
 import tensorflow as tf
 import tensorflow.keras.layers as L
-from RNNAttentionLayers import BahdanauAttention
-from RNNAttentionLayers import ScaledDotProductAttention
+from NMT_PSL.RNNAttentionLayers import BahdanauAttention
+from NMT_PSL.RNNAttentionLayers import ScaledDotProductAttention
 
 
 class DecoderLSTM(tf.keras.Model):

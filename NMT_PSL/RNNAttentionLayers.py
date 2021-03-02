@@ -1,5 +1,5 @@
 import tensorflow as tf
-import tensorflow.keras.layers as L
+#import tensorflow.keras.layers as L
 
 
 class BahdanauAttention(tf.keras.layers.Layer):
