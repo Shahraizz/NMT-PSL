@@ -5,6 +5,18 @@ import tensorflow_datasets as tfds
 from transformers import AutoTokenizer
 from bpemb import BPEmb
 
+from nltk.tokenize import TweetTokenizer
+
+
+def preprocess_sentence(w):
+    tknzr = TweetTokenizer()
+    x = tknzr.tokenize(w)
+    x = [i.lower() for i in x]
+    return ' '.join(x)
+
+def start_end_token(sen):
+    return "<start> "+sen+" <end>"
+
 def TFTokenizer(
     train_data,test_data, inp_lang, targ_lang, 
     pad='post', fit_test=True, is_lower=True,
@@ -206,3 +218,61 @@ def bpeTokenizer(train_data, test_data, inp_lang, targ_lang, vs, pad='post',
         print('Max_length of target sequence test: {}'.format(targ_tensor_test.shape[1]))
         
     return bpemb_en, (inp_tensor_train, targ_tensor_train, inp_tensor_test, targ_tensor_test)
+
+
+
+def tokenize(TOKENIZER, df_train, df_test, input_language, targ_language, pad="post"):
+    if TOKENIZER == 'tf':
+        df_train = df_train.applymap(lambda x: preprocess_sentence(str(x)))
+        df_train = df_train.applymap(lambda x: start_end_token(str(x)))
+        df_test = df_test.applymap(lambda x: preprocess_sentence(str(x)))
+        df_test = df_test.applymap(lambda x: start_end_token(str(x)))
+    
+        lang, (inp_tensor_train, targ_tensor_train, inp_tensor_test, targ_tensor_test) = TFTokenizer(
+            df_train,df_test, input_language,targ_language, pad=pad)
+    
+        start_tok = lang.word_index['<start>']
+        end_tok = lang.word_index['<end>']
+    
+        vocab_size = len(lang.word_index)+1
+    
+    elif TOKENIZER is 'tfsub':
+        lang, (inp_tensor_train, targ_tensor_train, inp_tensor_test, targ_tensor_test) = TFSubTokenizer(
+            df_train, df_test, input_language, targ_language, pad=pad)
+    
+        start_tok = lang.vocab_size
+        end_tok = lang.vocab_size+1
+    
+        vocab_size = lang.vocab_size
+    
+
+    elif TOKENIZER == 'bert':
+    
+    
+        lang, (inp_tensor_train, targ_tensor_train, inp_tensor_test, targ_tensor_test) = bertTokenizer(
+            df_train,df_test, input_language,targ_language, pad=pad)
+    
+        start_tok = lang.cls_token_id
+        end_tok = lang.sep_token_id
+    
+        vocab_size = lang.vocab_size
+    
+
+    elif TOKENIZER is 'bpe':
+    
+        vocab_size = 100000
+        start_tok = vocab_size-2
+        end_tok = vocab_size-1
+    
+        lang, (inp_tensor_train, targ_tensor_train, inp_tensor_test, targ_tensor_test) = bpeTokenizer(
+            df_train, df_test, input_language, targ_language, vocab_size)
+
+    ######
+
+    max_length_inp = inp_tensor_train.shape[1]
+    max_length_targ = targ_tensor_train.shape[1]
+    print('Vocabulary size: {}\n'.format(vocab_size))
+    ######
+
+    return lang, vocab_size, start_tok, end_tok,
+    (inp_tensor_train, targ_tensor_train, inp_tensor_test, targ_tensor_test)

@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='NMT_PSL',
-    version='0.0.16',
+    version='0.0.17',
     description='Pakistan sign language text translation',
     url='https://github.com/Shahraizz/NMT-PSL.git',
     author='Shahraiz Anwer',
