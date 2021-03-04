@@ -221,7 +221,7 @@ def bpeTokenizer(train_data, test_data, inp_lang, targ_lang, vs, pad='post',
 
 
 
-def tokenize(TOKENIZER, df_train, df_test, input_language, targ_language, pad="post"):
+def psl_tokenizer(TOKENIZER, df_train, df_test, input_language, targ_language, pad="post"):
     if TOKENIZER == 'tf':
         df_train = df_train.applymap(lambda x: preprocess_sentence(str(x)))
         df_train = df_train.applymap(lambda x: start_end_token(str(x)))
@@ -260,7 +260,7 @@ def tokenize(TOKENIZER, df_train, df_test, input_language, targ_language, pad="p
 
     elif TOKENIZER is 'bpe':
     
-        vocab_size = 100000
+        vocab_size = 10000
         start_tok = vocab_size-2
         end_tok = vocab_size-1
     
