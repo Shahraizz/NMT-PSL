@@ -274,4 +274,4 @@ def psl_tokenizer(TOKENIZER, df_train, df_test, input_language, targ_language, p
     print('Vocabulary size: {}\n'.format(vocab_size))
     ######
 
-    return [inp_tensor_train, targ_tensor_train, inp_tensor_test, targ_tensor_test, lang, vocab_size, start_tok, end_tok]
+    return lang, vocab_size, start_tok, end_tok, (inp_tensor_train, targ_tensor_train, inp_tensor_test, targ_tensor_test)
