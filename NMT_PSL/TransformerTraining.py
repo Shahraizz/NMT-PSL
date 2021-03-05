@@ -310,7 +310,7 @@ def train_model(path):
     
         # inp -> english, tar -> psl
         for (batch, (inp, tar)) in enumerate(train_dataset):
-            train_step(inp, tar,optimizer, transformer, bert=False)
+            train_step(inp, tar, transformer, optimizer, bert=False)
             if batch % 100 == 0:
                 print ('Epoch {} Batch {} Loss {:.4f} Accuracy {:.4f}'.format(
                     epoch + 1, batch, train_loss.result(), train_accuracy.result()))
