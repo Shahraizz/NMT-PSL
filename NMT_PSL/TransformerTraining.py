@@ -59,7 +59,7 @@ BATCH_SIZE_TRAIN = 64
 BATCH_SIZE_TEST = 500
 BATCH_SIZE_VAL = 500
 
-EPOCHS = 15
+EPOCHS = 5
 
 # transformer base parameters
 num_layers = 6
@@ -131,7 +131,7 @@ optimizer = tf.keras.optimizers.Adam(learning_rate, beta_1=0.9, beta_2=0.98,
 
 
 
-def inference_step(inp, targ, start_tok, transformer):
+def inference_step(inp, targ, start_tok, transformer, bert_enc=False):
     
     max_len = targ.shape[1]
     encoder_input = inp
@@ -171,7 +171,7 @@ def inference_step(inp, targ, start_tok, transformer):
 
 #######
 
-def inference(data):
+def inference(data, start_tok, transformer, bert_enc=False):
     
     val_loss.reset_states()
     val_accuracy.reset_states()
@@ -180,7 +180,7 @@ def inference(data):
     pred = []
     for (batch,(inp,targ)) in enumerate(data):
         
-        output, att_weights = inference_step(inp, targ)
+        output, att_weights = inference_step(inp, targ, start_tok, transformer, bert_enc=False)
         
         attention_weights.append(att_weights)
         pred.append(output)
@@ -308,7 +308,7 @@ def train_model(path):
     
         # inp -> english, tar -> psl
         for (batch, (inp, tar)) in enumerate(train_dataset):
-            train_step(inp, tar)
+            train_step(inp, tar, transformer, bert=False)
         
             if batch % 100 == 0:
                 print ('Epoch {} Batch {} Loss {:.4f} Accuracy {:.4f}'.format(
@@ -322,7 +322,7 @@ def train_model(path):
                                                             train_loss.result(), 
                                                             train_accuracy.result()))
         
-        inference(val_dataset) # calculate validation loss
+        inference(val_dataset, start_tok, transformer) # calculate validation loss
         print ('Epoch {} val Loss {:.4f} val Accuracy {:.4f}'.format(epoch + 1,
                                                                     val_loss.result(), 
                                                                     val_accuracy.result()))
@@ -333,6 +333,8 @@ def train_model(path):
         history['train_acc'].append(train_accuracy.result())
         history['val_loss'].append(val_loss.result())
         history['val_acc'].append(val_accuracy.result())
+
+        return history
 
 
 
