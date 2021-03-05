@@ -35,3 +35,16 @@ def set_dev_size(around, total_size):
     for i in range(around,around+64+1):
         if (total_size- i) % 64 == 0:
             return i
+
+
+def loadDataset(path, test_size, random_state):
+    
+    df = pd.read_excel(path, usecols=['English', 'PSL']).dropna()
+    
+    df = shuffle(df,random_state=random_state).reset_index(drop=True)
+
+    train_data = df.iloc[:-test_size].reset_index(drop=True)
+
+    test_data = df.iloc[-test_size:].reset_index(drop=True)
+    
+    return train_data, test_data

@@ -193,7 +193,7 @@ def inference(data, start_tok, transformer, bert_enc=False):
 
 
 
-#@tf.function()
+@tf.function()
 def train_step(inp, tar, transformer, optimizer, bert=False):
   tar_inp = tar[:, :-1]
   tar_real = tar[:, 1:]
@@ -216,25 +216,9 @@ def train_step(inp, tar, transformer, optimizer, bert=False):
 
 
 
-
-def loadDataset(path, test_size, random_state):
-
-    #!wget -O ./Osama.xlsx  "https://docs.google.com/spreadsheets/d/1dXEZYseoUVZ1jXUTNyoHNH5ujE4bxdC3IligxPh65uE/export?gid=0&format=xlsx"
-    
-    df = pd.read_excel(path, usecols=['English', 'PSL']).dropna()
-    
-    df = shuffle(df,random_state=random_state).reset_index(drop=True)
-
-    train_data = df.iloc[:-test_size].reset_index(drop=True)
-
-    test_data = df.iloc[-test_size:].reset_index(drop=True)
-    
-    return train_data, test_data
-
-
 def train_model(path):
 
-    df_train, df_test = loadDataset(path, 2000, 69)
+    df_train, df_test = utils.loadDataset(path, 2000, 69)
 
     lang, vocab_size, start_tok, end_tok, (inp_tensor_train, targ_tensor_train, inp_tensor_test, targ_tensor_test) = psl_tokenizer(
         TOKENIZER, df_train, df_test, input_language, targ_language, pad="post"
@@ -317,10 +301,13 @@ def train_model(path):
                 print ('Epoch {} Batch {} Loss {:.4f} Accuracy {:.4f}'.format(
                     epoch + 1, batch, train_loss.result(), train_accuracy.result()))
         
-        #if (epoch + 1) % 5 == 0:
-        #    ckpt_save_path = ckpt_manager.save()
-        #    print ('Saving checkpoint for epoch {} at {}'.format(epoch+1,
-        #                                                         ckpt_save_path))
+
+        if (epoch + 1) % 1 == 0:
+            ckpt_save_path = ckpt_manager.save()
+            print ('Saving checkpoint for epoch {} at {}'.format(epoch+1,
+                                                                 ckpt_save_path))
+
+
         print ('Epoch {} Loss {:.4f} Accuracy {:.4f}'.format(epoch + 1,
                                                             train_loss.result(), 
                                                             train_accuracy.result()))

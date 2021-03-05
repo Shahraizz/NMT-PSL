@@ -93,3 +93,22 @@ def loadBpeEmb(tokenizer):
     tokenizer: #
     """
     return tf.keras.initializers.Constant(tokenizer.vectors)
+
+"""
+def load_embedding_matrix(embedding):
+    misses = []
+
+    if embedding is 'bert':
+        embedding_dim = 768
+        #embedding_matrix = loadBert()
+    elif embedding is 'glove':
+        embedding_matrix, misses, embedding_index = loadGlove(d_model, vocab_size, lang, tok_size)
+    elif embedding is 'fasttext':
+        embedding_matrix, misses = loadFasttext(200000, lang, vocab_size, subword=False)
+    elif embedding is 'bpe':
+        embedding_matrix = loadBpeEmb(lang)
+        d_model = 100
+        
+    elif embedding is 'uniform':
+        embedding_matrix = 'uniform'
+"""
