@@ -1,5 +1,7 @@
 
 import tensorflow as tf
+from sklearn.utils import shuffle
+import pandas as pd
 
 def create_tf_dataset(
     train_pair,dev_pair,test_pair,batch_size_train,
