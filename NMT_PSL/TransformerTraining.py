@@ -1,7 +1,7 @@
-from TransformerModel import Transformer
-from TransformerModel import create_padding_mask
-from TransformerModel import create_look_ahead_mask
-from TransformerModel import create_masks
+from .TransformerModel import Transformer
+from .TransformerModel import create_padding_mask
+from .TransformerModel import create_look_ahead_mask
+from .TransformerModel import create_masks
 
 
 import numpy as np
