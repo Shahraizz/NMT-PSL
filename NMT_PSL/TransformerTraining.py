@@ -125,9 +125,7 @@ val_loss = tf.keras.metrics.Mean(name='val_loss')
 val_accuracy = tf.keras.metrics.SparseCategoricalAccuracy(
     name='val_accuracy')
 
-learning_rate = CustomSchedule(d_model)
-optimizer = tf.keras.optimizers.Adam(learning_rate, beta_1=0.9, beta_2=0.98, 
-                                     epsilon=1e-9)
+
 
 
 
@@ -193,8 +191,8 @@ def inference(data, start_tok, transformer, bert_enc=False):
 
 
 
-@tf.function()
-def train_step(inp, tar, transformer, bert=False):
+#@tf.function()
+def train_step(inp, tar, transformer, optimizer, bert=False):
   tar_inp = tar[:, :-1]
   tar_real = tar[:, 1:]
   
@@ -283,6 +281,10 @@ def train_model(path):
                           train_emb = train_emb,
                           bert = bert_enc
                          )
+    
+    learning_rate = CustomSchedule(d_model)
+    optimizer = tf.keras.optimizers.Adam(learning_rate, beta_1=0.9, beta_2=0.98, 
+                                     epsilon=1e-9)
 
     checkpoint_path = "./checkpoints/train"
 
@@ -308,8 +310,7 @@ def train_model(path):
     
         # inp -> english, tar -> psl
         for (batch, (inp, tar)) in enumerate(train_dataset):
-            train_step(inp, tar, transformer, bert=False)
-        
+            train_step(inp, tar,optimizer, transformer, bert=False)
             if batch % 100 == 0:
                 print ('Epoch {} Batch {} Loss {:.4f} Accuracy {:.4f}'.format(
                     epoch + 1, batch, train_loss.result(), train_accuracy.result()))
