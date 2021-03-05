@@ -64,7 +64,7 @@ BATCH_SIZE_VAL = 500
 EPOCHS = 5
 
 # transformer base parameters
-num_layers = 6
+num_layers = 4
 dff = 2048
 num_heads = 4
 bert_enc = False
