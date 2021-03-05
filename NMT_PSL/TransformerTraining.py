@@ -11,6 +11,8 @@ from sklearn.utils import shuffle
 from sklearn.model_selection import train_test_split
 
 import tensorflow as tf
+print("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))
+
 from configparser import ConfigParser
 import numpy as np
 import pandas as pd
