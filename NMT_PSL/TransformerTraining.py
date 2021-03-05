@@ -240,19 +240,19 @@ def train_model(path):
         TOKENIZER, df_train, df_test, input_language, targ_language, pad="post"
     )
 
-    val_size = utils.set_dev_size(val_size,inp_tensor_train.shape[0])
+    dev_size = utils.set_dev_size(val_size,inp_tensor_train.shape[0])
 
     X_train, X_val, y_train, y_val = train_test_split(
         inp_tensor_train,
         targ_tensor_train,
-        test_size=val_size,
+        test_size=dev_size,
         random_state=random_state
     )
 
     input_vocab_size = vocab_size
     target_vocab_size = vocab_size
 
-    train_dataset, val_dataset, test_dataset = util.create_tf_dataset(
+    train_dataset, val_dataset, test_dataset = utils.create_tf_dataset(
         (X_train, y_train),(X_val, y_val),(inp_tensor_test, targ_tensor_test),
         BATCH_SIZE_TRAIN, BATCH_SIZE_VAL, BATCH_SIZE_TEST, verbose=True
     )
