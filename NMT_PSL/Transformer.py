@@ -11,6 +11,14 @@ import json
 #with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),'NMT_PSL','config.json')) as f:
 #    config = json.load(f)
 
+
+from configparser import ConfigParser
+config_file = 'config.ini'
+config = ConfigParser()
+config.read(config_file)
+print(config.sections())
+
+
 with open(os.path.join(os.sys.path[0], "config.json")) as f:
     config = json.load(f)
 
