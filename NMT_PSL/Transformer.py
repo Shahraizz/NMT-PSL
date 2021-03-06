@@ -12,12 +12,12 @@ import json
 #    config = json.load(f)
 
 
-from configparser import ConfigParser
-config_file = 'ccc.ini'
-config = ConfigParser()
-config.read(config_file)
-print(config.sections())
-print(config['transformer'])
+#from configparser import ConfigParser
+#config_file = 'ccc.ini'
+#config = ConfigParser()
+#config.read(config_file)
+#print(config.sections())
+#print(config['transformer'])
 
 
 with open(os.path.join(os.sys.path[0], "config.json")) as f:
