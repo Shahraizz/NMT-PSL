@@ -14,8 +14,9 @@ import pandas as pd
 import time
 
 
+config_file = 'config.ini'
 config = ConfigParser()
-config.read('config.ini')
+config.read(config_file)
 
 
 
@@ -156,8 +157,12 @@ def train_model(path):
         TOKENIZER, df_train, df_test, input_language, targ_language, pad="post"
     )
 
-    #config.set('TRANSFORMER','start_tok', str(start_tok))
-    #config.set('TRANSFORMER','end_tok', str(end_tok))
+    config.add_section('TEMP')
+    config.set('TEMP','start_tok', str(start_tok))
+    config.set('TEMP','end_tok', str(end_tok))
+
+    with open(config_file,'w') as cfg:
+        config.write(cfg)
 
     dev_size = utils.set_dev_size(val_size,inp_tensor_train.shape[0])
 
@@ -279,7 +284,7 @@ def train_model(path):
         history['val_loss'].append(val_loss.result())
         history['val_acc'].append(val_accuracy.result())
 
-        return history
+    return history
 
 
 
