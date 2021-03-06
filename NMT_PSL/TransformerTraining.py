@@ -79,25 +79,6 @@ embedding = 'bpe'
 dropout_rate = 0.1
 
 
-class CustomSchedule(tf.keras.optimizers.schedules.LearningRateSchedule):
-    def __init__(self, d_model, warmup_steps=4000):
-        super(CustomSchedule, self).__init__()
-
-        self.d_model = d_model
-        self.d_model = tf.cast(self.d_model, tf.float32)
-
-        self.warmup_steps = warmup_steps
-    
-    def __call__(self, step):
-        arg1 = tf.math.rsqrt(step)
-        arg2 = step * (self.warmup_steps ** -1.5)
-
-        return tf.math.rsqrt(self.d_model) * tf.math.minimum(arg1, arg2)
-    
-    
-    
-##############
-
 
 loss_object = tf.keras.losses.SparseCategoricalCrossentropy(
     from_logits=True, reduction='none')
@@ -193,26 +174,7 @@ def inference(data, start_tok, transformer, bert_enc=False):
 
 
 
-@tf.function()
-def train_step(inp, tar, transformer, optimizer, bert=False):
-  tar_inp = tar[:, :-1]
-  tar_real = tar[:, 1:]
-  
-  enc_padding_mask, combined_mask, dec_padding_mask = create_masks(inp, tar_inp,bert=bert_enc)
-  
-  with tf.GradientTape() as tape:
-    predictions, _ = transformer(inp, tar_inp, 
-                                 True, 
-                                 enc_padding_mask, 
-                                 combined_mask, 
-                                 dec_padding_mask)
-    loss = loss_function(tar_real, predictions)
 
-  gradients = tape.gradient(loss, transformer.trainable_variables)    
-  optimizer.apply_gradients(zip(gradients, transformer.trainable_variables))
-  
-  train_loss(loss)
-  train_accuracy(tar_real, predictions)
 
 
 
@@ -224,6 +186,9 @@ def train_model(path):
         TOKENIZER, df_train, df_test, input_language, targ_language, pad="post"
     )
 
+    config.set('TRANSFORMER','start_tok', start_tok)
+    config.set('TRANSFORMER','end_tok', end_tok)
+
     dev_size = utils.set_dev_size(val_size,inp_tensor_train.shape[0])
 
     X_train, X_val, y_train, y_val = train_test_split(
@@ -233,8 +198,7 @@ def train_model(path):
         random_state=random_state
     )
 
-    input_vocab_size = vocab_size
-    target_vocab_size = vocab_size
+    
 
     train_dataset, val_dataset, test_dataset = utils.create_tf_dataset(
         (X_train, y_train),(X_val, y_val),(inp_tensor_test, targ_tensor_test),
@@ -247,7 +211,7 @@ def train_model(path):
         embedding_dim = 768
         #embedding_matrix = loadBert()
     elif embedding is 'glove':
-        embedding_matrix, misses, embedding_index = Embeddings.loadGlove(d_model, vocab_size, lang, tok_size)
+        embedding_matrix, misses, embedding_index = Embeddings.loadGlove( d_model, vocab_size, lang, tok_size)
     elif embedding is 'fasttext':
         embedding_matrix, misses = Embeddings.loadFasttext(200000, lang, vocab_size, subword=False)
     elif embedding is 'bpe':
@@ -258,17 +222,40 @@ def train_model(path):
         embedding_matrix = 'uniform'
 
 
+
+    @tf.function()
+    def train_step(inp, tar, transformer, optimizer, bert=False):
+        tar_inp = tar[:, :-1]
+        tar_real = tar[:, 1:]
+        
+        enc_padding_mask, combined_mask, dec_padding_mask = create_masks(inp, tar_inp,bert=bert_enc)
+        
+        with tf.GradientTape() as tape:
+            predictions, _ = transformer(inp, tar_inp, 
+                                        True, 
+                                        enc_padding_mask, 
+                                        combined_mask, 
+                                        dec_padding_mask)
+            loss = loss_function(tar_real, predictions)
+
+        gradients = tape.gradient(loss, transformer.trainable_variables)    
+        optimizer.apply_gradients(zip(gradients, transformer.trainable_variables))
+        
+        train_loss(loss)
+        train_accuracy(tar_real, predictions)
+
+
     transformer = Transformer(num_layers, d_model, num_heads, dff,
-                          input_vocab_size, target_vocab_size, 
-                          pe_input=input_vocab_size, 
-                          pe_target=target_vocab_size,
+                          vocab_size, vocab_size, 
+                          pe_input=vocab_size, 
+                          pe_target=vocab_size,
                           rate=dropout_rate,
                           emd_matrix=embedding_matrix,
                           train_emb = train_emb,
                           bert = bert_enc
                          )
     
-    learning_rate = CustomSchedule(d_model)
+    learning_rate = utils.CustomSchedule(d_model)
     optimizer = tf.keras.optimizers.Adam(learning_rate, beta_1=0.9, beta_2=0.98, 
                                      epsilon=1e-9)
 
