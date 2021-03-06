@@ -8,6 +8,6 @@ setup(
     author='Shahraiz Anwer',
     author_email='shehraizbhatti11@gmail.com',
     license='unlicense',
-    packages=['NMT_PSL'],
+    packages=['NMT_PSL','Transformer'],
     zip_safe=False
 )
