@@ -2,28 +2,21 @@ from NMT_PSL.TransformerModel import Transformer
 from NMT_PSL.TransformerModel import create_padding_mask
 from NMT_PSL.TransformerModel import create_look_ahead_mask
 from NMT_PSL.TransformerModel import create_masks
-
 from NMT_PSL import Embeddings
 from NMT_PSL import utils
 from NMT_PSL.Tokenizers import psl_tokenizer
-
 from sklearn.utils import shuffle
 from sklearn.model_selection import train_test_split
-
 import tensorflow as tf
-print("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))
-
 from configparser import ConfigParser
 import numpy as np
 import pandas as pd
-
 import time
 
-#############
 
 config = ConfigParser()
 config.read('config.ini')
-#############
+
 
 
 CONFIG = { 
@@ -74,31 +67,13 @@ tok_size = 42
 train_emb = False
 
 embedding = 'bpe'
-
-
 dropout_rate = 0.1
+
 
 
 
 loss_object = tf.keras.losses.SparseCategoricalCrossentropy(
     from_logits=True, reduction='none')
-
-
-
-
-def loss_function(real, pred):
-    mask = tf.math.logical_not(tf.math.equal(real, 0))
-    loss_ = loss_object(real, pred)
-
-    mask = tf.cast(mask, dtype=loss_.dtype)
-    loss_ *= mask
-
-    return tf.reduce_sum(loss_)/tf.reduce_sum(mask)
-
-
-
-##########
-
 
 train_loss = tf.keras.metrics.Mean(name='train_loss')
 train_accuracy = tf.keras.metrics.SparseCategoricalAccuracy(
@@ -107,7 +82,6 @@ train_accuracy = tf.keras.metrics.SparseCategoricalAccuracy(
 val_loss = tf.keras.metrics.Mean(name='val_loss')
 val_accuracy = tf.keras.metrics.SparseCategoricalAccuracy(
     name='val_accuracy')
-
 
 
 
@@ -143,7 +117,7 @@ def inference_step(inp, targ, start_tok, transformer, bert_enc=False):
         
     sen_pred = tf.concat(sen_pred[:-1], axis=1) # (batch_size, max_length_targ-1, vocab_size)
     
-    loss = loss_function(targ_real, sen_pred)
+    loss = utils.loss_function(targ_real, sen_pred, loss_object)
     
     val_loss(loss)
     val_accuracy(targ_real, sen_pred)
@@ -174,10 +148,6 @@ def inference(data, start_tok, transformer, bert_enc=False):
 
 
 
-
-
-
-
 def train_model(path):
 
     df_train, df_test = utils.loadDataset(path, 2000, 69)
@@ -186,8 +156,8 @@ def train_model(path):
         TOKENIZER, df_train, df_test, input_language, targ_language, pad="post"
     )
 
-    config.set('TRANSFORMER','start_tok', start_tok)
-    config.set('TRANSFORMER','end_tok', end_tok)
+    config.set('TRANSFORMER','start_tok', str(start_tok))
+    config.set('TRANSFORMER','end_tok', str(end_tok))
 
     dev_size = utils.set_dev_size(val_size,inp_tensor_train.shape[0])
 
@@ -198,7 +168,6 @@ def train_model(path):
         random_state=random_state
     )
 
-    
 
     train_dataset, val_dataset, test_dataset = utils.create_tf_dataset(
         (X_train, y_train),(X_val, y_val),(inp_tensor_test, targ_tensor_test),
@@ -216,8 +185,7 @@ def train_model(path):
         embedding_matrix, misses = Embeddings.loadFasttext(200000, lang, vocab_size, subword=False)
     elif embedding is 'bpe':
         embedding_matrix = Embeddings.loadBpeEmb(lang)
-        d_model = 100
-        
+        d_model = 100  
     elif embedding is 'uniform':
         embedding_matrix = 'uniform'
 
@@ -236,7 +204,7 @@ def train_model(path):
                                         enc_padding_mask, 
                                         combined_mask, 
                                         dec_padding_mask)
-            loss = loss_function(tar_real, predictions)
+            loss = utils.loss_function(tar_real, predictions, loss_object)
 
         gradients = tape.gradient(loss, transformer.trainable_variables)    
         optimizer.apply_gradients(zip(gradients, transformer.trainable_variables))
