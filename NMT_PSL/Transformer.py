@@ -11,7 +11,7 @@ import json
 #with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),'NMT_PSL','config.json')) as f:
 #    config = json.load(f)
 
-with open(".config.json") as f:
+with open("config.json") as f:
     config = json.load(f)
 
 
