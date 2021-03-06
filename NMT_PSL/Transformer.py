@@ -6,22 +6,27 @@ from NMT_PSL.TransformerModel import create_masks
 #from NMT_PSL.TransformerModel import Transformer
 from NMT_PSL import utils
 
-config = ConfigParser()
-config.read('config.ini')
+import json
+
+#config = ConfigParser()
+#config.read('config.ini')
+
+with open('config.json') as f:
+    config = json.load(f)
 
 
 
 
 class Model():
 
-    start_tok = config['PREPROCESSING']['start_tok']
-    end_tok = config['PREPROCESSING']['start_tok']
+    start_tok = config['preprocessing']['start_tok']
+    end_tok = config['preprocessing']['start_tok']
     vs = 10000
-    num_layers = config['TRANSFORMER']['num_layers']
-    d_model = config['TRANSFORMER']['d_model']
-    num_heads = config['TRANSFORMER']['num_heads']
-    dff = config['TRANSFORMER']['dff']
-    dropout_rate = config['TRANSFORMER']['dropout_rate']
+    num_layers = config['transformer']['num_layers']
+    d_model = config['transformer']['d_model']
+    num_heads = config['transformer']['num_heads']
+    dff = config['transformer']['dff']
+    dropout_rate = config['transformer']['dropout_rate']
     train_emb = False
     bert_enc = False
 
