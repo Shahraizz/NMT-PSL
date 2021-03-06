@@ -13,7 +13,7 @@ import json
 
 
 from configparser import ConfigParser
-config_file = 'config.ini'
+config_file = 'ccc.ini'
 config = ConfigParser()
 config.read(config_file)
 print(config.sections())
