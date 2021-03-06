@@ -156,8 +156,8 @@ def train_model(path):
         TOKENIZER, df_train, df_test, input_language, targ_language, pad="post"
     )
 
-    config.set('TRANSFORMER','start_tok', str(start_tok))
-    config.set('TRANSFORMER','end_tok', str(end_tok))
+    #config.set('TRANSFORMER','start_tok', str(start_tok))
+    #config.set('TRANSFORMER','end_tok', str(end_tok))
 
     dev_size = utils.set_dev_size(val_size,inp_tensor_train.shape[0])
 
