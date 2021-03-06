@@ -17,6 +17,7 @@ config_file = 'config.ini'
 config = ConfigParser()
 config.read(config_file)
 print(config.sections())
+print(config['transformer'])
 
 
 with open(os.path.join(os.sys.path[0], "config.json")) as f:
