@@ -11,7 +11,7 @@ import json
 #config = ConfigParser()
 #config.read('config.ini')
 
-with open('config.json') as f:
+with open('NMT_PSL.config.json') as f:
     config = json.load(f)
 
 
