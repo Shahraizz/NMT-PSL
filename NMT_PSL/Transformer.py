@@ -3,16 +3,12 @@ from bpemb import BPEmb
 import tensorflow as tf
 from NMT_PSL.TransformerModel import Transformer
 from NMT_PSL.TransformerModel import create_masks
-#from NMT_PSL.TransformerModel import Transformer
 from NMT_PSL import utils
 import os
 
 import json
 
-#config = ConfigParser()
-#config.read('config.ini')
-
-with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),'config.json')) as f:
+with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),'NMT_PSL','config.json')) as f:
     config = json.load(f)
 
 
